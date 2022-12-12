@@ -1,0 +1,17 @@
+.boardStyle {
+    width: 400px;
+    height: 400px;
+    margin: 20px auto;
+    display: grid;
+    grid: repeat(8, 1fr) / repeat(8, 1fr);
+}
+
+.squareStyle {
+    border: 1px solid #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    /* border-radius: 50%; */
+}
