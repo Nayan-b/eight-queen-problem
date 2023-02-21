@@ -20,7 +20,6 @@ const ChessBoard = (props) => {
     justifyContent: 'center',
     width: `${squareLength}px`,
     height: `${squareLength}px`,
-
   };
 
   return (

@@ -1,7 +1,3 @@
-.boardStyle :hover {
-    background-color: rgb(159, 191, 206);
-}
-
 .squareStyle:hover {
     cursor: pointer;
     background-color: rgb(159, 191, 206) !important;

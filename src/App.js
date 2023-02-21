@@ -4,13 +4,14 @@ import Dropdown from './components/Dropdown';
 
 import './App.css';
 
-const initialState = {quenPosition: [], validity: true};
+const initialState = {row: 8, quenPosition: [], validity: true};
 
 const App = () => {
-  const [length, setLength] = useState(8);
+  const [length, setLength] = useState(+initialState.row);
   const [queenState, setQueenState] = useState(initialState.quenPosition);
   const [validity, setValidity] = useState(initialState.validity);
   const [clickedIndex, setClickedIndex] = useState(null);
+  const [isGameOver, setGameOver] = useState(false);
 
   const idToRC = useCallback((id) => {
     const row = Math.floor(id/length);
@@ -21,7 +22,7 @@ const App = () => {
   const handleReset = useCallback(() => {
     setQueenState(initialState.quenPosition);
     setValidity(initialState.validity);
-    // setClickedIndex(null);)
+    setClickedIndex(null);
   }, []);
 
   const chessEngine = useCallback((queenState) => {
@@ -45,14 +46,27 @@ const App = () => {
 
   useEffect(() => {
     queenState.length > 1 && chessEngine(queenState);
-  }, [chessEngine, clickedIndex]);
+  }, [chessEngine, clickedIndex, queenState]);
 
-  
-  const handleSelection = useCallback((index) => setLength(index), []);
+  const handleSelection = useCallback((index) => {
+    handleReset();
+    setLength(index);
+  }, [handleReset]);
+
+  useEffect(() => {
+    if (queenState.length === +length) {
+      setGameOver(true);
+      setTimeout(() => {
+        handleReset();
+        setGameOver(false);
+      }, 3000);
+    }
+  }, [handleReset, queenState, length]);
 
   return (
     <div className="app">
       <Dropdown onClick={handleSelection} />
+      {isGameOver && <p>..............You have solved a problem..................</p>}
       <ChessBoard queens={queenState} onClick={handleBoxClick} lengthOfBoard={length} />
       <button className="resetButton" onClick={handleReset}>Reset</button>
       {validity ? 'Go on' : "Sorry It's wrong move"}
