@@ -1,24 +1,28 @@
 // import { useState, useCallback } from "react";
 
-const backTracking = (queenState, length, visitedBox=[], i=100) => {
+const backTracking = (visitedState, unVisitedRow, length, i=20000) => {
     // console.log("5  ", queenState, length)
     // const [currentPos] = useState(null)
-    let queenSt = queenState.slice()
+    if (unVisitedRow.length === 0 && visitedState.length === length) {
+        console.log("??? 7   ", unVisitedRow, visitedState)
+        return visitedState;
+    }
+    // let queenSt = queenState.slice()
     const idToRC = (id) => {
       const row = Math.floor(id/length);
       const col = id%length;
       return [row, col];
     }
     
-    if(i-- === 0) return false
+    if(i-- === 0) return false;
 
     const RCToId = (row, col) => {
       return row*length + col
     }
     
 
-    if (queenSt.length === length) return true
-    const [row, col] = idToRC(queenSt[queenSt.length-1])
+    // if (queenSt.length === length) return true
+    // const [row, col] = idToRC(visitedState[visitedState.length-1])
     // const checkWin = () => {
 
     // }
@@ -34,24 +38,20 @@ const backTracking = (queenState, length, visitedBox=[], i=100) => {
         return !isMoveInvalid
     }
 
-    // let visitedBox = 
-    for (let i=row; i<8; i++) {
-        for (let j=0; j<8; j++) {
-            const currendId = RCToId(i, j)
-            if (!visitedBox.includes(currendId))
-            queenSt = Array.from(new Set(queenSt).add(currendId));
-            if (isMoveValid(queenSt)) {
-                break
-            }
-            queenSt.pop()
+    const row = unVisitedRow[0]
+    for (let col=0; col<length; col++) {
+        const currentId = RCToId(row, col)
+        visitedState = Array.from(new Set(visitedState).add(currentId))
+        if (isMoveValid(visitedState)) {
+            unVisitedRow = unVisitedRow.filter(el => el !== row)
+            if (backTracking(visitedState, unVisitedRow, length, i)) return visitedState;
+            unVisitedRow.splice(0, 0, row)
+            // console.log('unvisited  -- ', unVisitedRow, visitedState)
         }
+        visitedState = visitedState.filter(el => el !== currentId)
     }
-
-    if (queenSt.length === length) return queenSt
-    visitedBox = [...visitedBox, queenSt.pop()]
-    return backTracking(queenSt, length, visitedBox, i)
-
-    // return queenSt
+    // console.log("false  ", visitedState, i, unVisitedRow)
+    return false;
 }
 
 export default backTracking;

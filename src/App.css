@@ -7,3 +7,8 @@
 .resetButton {
     margin: auto;
 }
+
+.checkButton {
+    display: inherit;
+    margin: 0;
+}
