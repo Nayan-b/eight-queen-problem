@@ -8,10 +8,10 @@ import './App.css';
 const initialState = {row: 8, quenPosition: [], validity: true};
 
 const App = () => {
-  const [length, setLength] = useState(+initialState.row);
+  const [length, setLength] = useState(initialState.row);
   const [queenState, setQueenState] = useState(initialState.quenPosition);
   const [computerMode, setComputerMode] = useState(false)
-  const [isSolvable, setSolveable] = useState(true)
+  const [isSolveable, setSolveable] = useState(true)
   // const [validity, setValidity] = useState(initialState.validity);
   // const [clickedIndex, setClickedIndex] = useState(null);
   const [isGameOver, setGameOver] = useState(false);
@@ -28,27 +28,16 @@ const App = () => {
 
   const handleReset = useCallback(() => {
     setQueenState(initialState.quenPosition);
-    // setValidity(initialState.validity);
     setGameOver(false);
     setComputerMode(false)
-    // setClickedIndex(null);
+    setSolveable(true);
   }, []);
 
   useEffect(() => {
-    // console.log("34  ", queenState, length)
-    if (isSolvable && computerMode && queenState.length !== length) {
-      const visitedRow = queenState.map(id => idToRC(id)[0])
-      const unVisitedRow = [0, 1, 2, 3, 4, 5, 6, 7].filter(row => !visitedRow.includes(row))
-      console.log("38  ", visitedRow, unVisitedRow, length)
-      const finalQueenState = backTracking(queenState.slice(), unVisitedRow, length)
-      if (finalQueenState) {
-        console.log("39  ----   ", queenState);
-        setQueenState(finalQueenState)
-      } else {
-        setSolveable(false)
-      }
+    if (isSolveable && computerMode && !isGameOver) {
+      
     }
-  }, [queenState, length, idToRC, computerMode, isSolvable]);
+  }, [queenState, length, idToRC, computerMode, isSolveable, isGameOver]);
 
   const chessEngine = useCallback((queenState) => {
     const queenStateRC = queenState.map((el) => idToRC(el));
@@ -74,24 +63,30 @@ const App = () => {
 
   const handleSelection = useCallback((index) => {
     handleReset();
-    setComputerMode(false)
-    setLength(index);
+    setLength(+index);
   }, [handleReset]);
 
   useEffect(() => {
-    if (queenState.length === +length) {
-      console.log(queenState, queenState.map(el => idToRC(el)))
+    if (queenState.length === length) {
       setGameOver(true);
-      // setTimeout(() => {
-      //   handleReset();
-      //   setGameOver(false);
-      // }, 3000);
     }
-  }, [queenState, length, idToRC]);
+  }, [queenState, length]);
 
   const handleButtonClick = useCallback(() => {
-    setComputerMode((prev) => !prev)
-  }, [])
+    if (queenState.length === length) return
+    const visitedRow = queenState.map(id => idToRC(id)[0])
+    const rowArray = []
+    for (let i=0; i<length; i++) {
+      rowArray.push(i)
+    }
+    const unVisitedRow = rowArray.filter(row => !visitedRow.includes(row))
+    const finalQueenState = backTracking(queenState.slice(), unVisitedRow, length)
+    if (finalQueenState) {
+      setQueenState(finalQueenState)
+    } else {
+      setSolveable(false)
+    }
+  }, [length, queenState, idToRC])
 
   return (
     <div className="app">
@@ -104,7 +99,7 @@ const App = () => {
         <p>Computer Mode</p>
       </div>
       {isGameOver && <p>..............You have solved a puzzle..................</p>}
-      {!isSolvable && <p>------------------------Can't be solved----------------------</p>}
+      {!isSolveable && <p>------------------------Can't be solved----------------------</p>}
       {/* <p>Go on</p> */}
     </div>
   );
